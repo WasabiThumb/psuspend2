@@ -18,7 +18,7 @@ import suspend from "psuspend";
 
 let process = require("child_process").exec(/* ... */);
 suspend(process); // suspend
-unsuspend(process); // unsuspend
+suspend(process, false); // unsuspend
 
 let pid = 12345;
 suspend(pid); // suspend PID 12345
