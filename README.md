@@ -1,4 +1,8 @@
 # PSuspend 2
+![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/WasabiThumb/psuspend2/node.js.yml?style=for-the-badge&logo=github)
+![npm](https://img.shields.io/npm/dt/psuspend?style=for-the-badge&logo=npm&link=https%3A%2F%2Fwww.npmjs.com%2Fpackage%2Fpsuspend)
+
+
 Pause and resume processes on all hosts, including Windows!
 
 ## Notice
