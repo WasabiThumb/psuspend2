@@ -15,7 +15,7 @@ const ZipSuspendBinaryArchiveEntries: ZipSuspendBinaryArchiveEntry[] = [
 
 export default abstract class ZipSuspendBinaryProvider implements SuspendBinaryProvider {
 
-    protected abstract async _getStream(): Promise<Readable>;
+    protected abstract _getStream(): Promise<Readable>;
 
     async get(): Promise<SuspendBinary> {
         const builder = await SuspendBinaryBuilder.create();
