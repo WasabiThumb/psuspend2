@@ -68,12 +68,35 @@ if (suspend.agent.hasEula()) {
 Using the agent (``suspend``, ``agent.suspend``, ``agent.unsuspend``) effectively
 accepts the EULA.
 
-## Why not ntsuspend?
+### Config
+The configuration is only evaluated when the agent is initialized. See [this section](#lazy-init)
+for info on when init occurs and how to forcefully reschedule it.
+```js
+// Since v2.1.0
+// Disable fetching the latest binary from the internet,
+// always use the bundled version
+suspend.config.set("onlyOffline", true);
+
+// Since v2.1.0
+// Compatibility with the "ntsuspend" module on Windows.
+// If this is not set to NONE, "ntsuspend" MUST
+// be installed, otherwise you will get errors! It is
+// an optional dependency since v2.1.0. It should
+// be installed unless you specifically exclude optional
+// dependencies, or are running this on a non-Windows system,
+// in which case this config option is ignored.
+// 0 : NONE (default)
+// 1 : BELOW_WIN8_1 (only below Windows 8.1)
+// 2 : ALWAYS
+suspend.config.set("ntsInterop", NtSuspendInteropMode.BELOW_WIN8_1);
+```
+
+## Why not just ntsuspend?
 The methods used by [ntsuspend](https://www.npmjs.com/package/ntsuspend)
 (``NtSuspendProcess``, ``NtResumeProcess``) are deprecated components of the
 Win32 API, and while removal of these methods is at the moment unlikely,
 their use is discouraged. ``PsSuspend`` has been sanctioned and maintained by
 Microsoft and supports **Windows 8.1** and higher (but may likely work on
 versions as low as Windows 2000). If supporting older versions is important for
-your project, consider ntsuspend either standalone or in conjunction with this
-package.
+your project, consider ntsuspend either standalone or the ``ntsInterop`` option
+in the [config](#config).

@@ -3,6 +3,7 @@ import { tmpdir } from "os";
 import * as path from "path";
 import { createWriteStream, WriteStream } from "fs";
 import OnlineSuspendBinaryProvider from "./binary/online";
+import SuspendConfig from "./config";
 
 
 export type SuspendBinary = {
@@ -14,18 +15,21 @@ export type SuspendBinary = {
 
 export interface SuspendBinaryProvider {
 
-    get(): Promise<SuspendBinary>
+    get(config: SuspendConfig): Promise<SuspendBinary>
 
 }
 
 export const OmniSuspendBinaryProvider: SuspendBinaryProvider = {
 
-    async get(): Promise<SuspendBinary> {
+    async get(config: SuspendConfig): Promise<SuspendBinary> {
+        if (config.get<boolean>("onlyOffline")) {
+            return await (require("./binary/offline")).default.get(config);
+        }
         try {
-            return await OnlineSuspendBinaryProvider.get();
+            return await OnlineSuspendBinaryProvider.get(config);
         } catch (e) {
             console.warn("Failed to fetch latest PsSuspend binary, using volatile cache");
-            return await (require("./binary/offline")).default.get();
+            return await (require("./binary/offline")).default.get(config);
         }
     }
 

@@ -1,6 +1,6 @@
 {
   "name": "psuspend",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Ultimate process pause & resume library for NodeJS",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
@@ -23,12 +23,14 @@
     "url": "https://github.com/WasabiThumb/psuspend2.git"
   },
   "devDependencies": {
-    "@types/got": "^9.6.12",
     "@types/node": "^20.8.2",
     "@types/unzipper": "^0.10.7",
     "typescript": "^5.2.2"
   },
   "dependencies": {
     "unzipper": "^0.10.14"
+  },
+  "optionalDependencies": {
+    "ntsuspend": "^1.0.0"
   }
 }

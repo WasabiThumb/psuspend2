@@ -1,10 +1,15 @@
 import {SuspendAgent, SuspendProcessID} from "../agent";
 import {ChildProcess, exec} from "child_process";
 import ProcessIDUtil from "../../util/id";
+import SuspendConfig from "../config";
 
 export default class UnixSuspendAgent implements SuspendAgent {
 
     readonly type: "unix" = "unix";
+    private readonly _config: SuspendConfig;
+    constructor(config: SuspendConfig) {
+        this._config = config;
+    }
 
     suspend(process: ChildProcess | SuspendProcessID, suspend: boolean = true): Promise<void> {
         if (typeof process === "object") {

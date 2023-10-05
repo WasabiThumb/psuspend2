@@ -1,24 +1,28 @@
-const suspend = require("../dist/index").default;
-const agent = suspend.agent;
+const util = require("./util/util");
+
+const impls = [
+    "simple",
+    "offline",
+    "ntsinterop"
+];
 
 (async () => {
-    console.log("= AGENT INFO =");
-    console.log("Type: " + agent.type);
-    let eula = agent.hasEula();
-    console.log("Has EULA: " + eula);
+    console.log("Running tests...");
+    await util.delay(500);
 
-    console.log("");
-    console.log("Initializing agent...");
-    await agent.init();
-    console.log("Ok!");
+    for (let i=0; i < impls.length; i++) {
+        const name = impls[i];
+        await util.write('\u001b[1m');
+        console.log(`${i + 1} / ${impls.length} : ${name}`);
+        await util.write('\u001b[0m');
+        console.log("");
+        await util.delay(200);
 
-    if (eula) {
-        console.log("\n= BEGIN AGENT EULA =")
-        console.log(await agent.getEula());
-        console.log("= END AGENT EULA =\n");
+        const testFunction = require("./impl/" + name);
+        await testFunction();
+
+        console.log("");
     }
 
-    console.log("Cleaning up agent...");
-    await agent.cleanup();
-    console.log("Ok!");
+    console.log("All tests completed successfully!");
 })().catch(console.error);
