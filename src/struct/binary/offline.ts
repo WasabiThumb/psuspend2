@@ -1,24 +1,52 @@
-import {SuspendBinary, SuspendBinaryBuilder, SuspendBinaryProvider} from "../binary";
-import {OfflineSuspendBinaryComponents} from "./offline/magic"; // BIG
+import {SuspendBinaryProvider} from "../binary";
 import { Readable } from "stream";
-import { once } from "events";
+import ZipSuspendBinaryProvider from "./zip";
+import * as path from "path";
+import * as fs from "fs/promises";
+import { createReadStream } from "fs";
 
-const OfflineSuspendBinaryProvider: SuspendBinaryProvider = {
 
-    async get(): Promise<SuspendBinary> {
-        const builder: SuspendBinaryBuilder = await SuspendBinaryBuilder.create();
-        for (let component of OfflineSuspendBinaryComponents) {
-            const ws = builder.write(component.type, component.fileName);
+const OfflineSuspendBinaryProvider: SuspendBinaryProvider = new class extends ZipSuspendBinaryProvider {
 
-            const buf = Buffer.from(component.data, 'base64');
-            const rs: Readable = new Readable();
-            rs.push(buf);
-            rs.push(null);
+    protected async _getStream(): Promise<Readable> {
+        const bundle: string = await this._findBundle();
+        return createReadStream(bundle);
+    }
 
-            rs.pipe(ws);
-            await once(rs, "end");
+    private async _findBundle(): Promise<string> {
+        const me: string = path.dirname(__filename);
+        let ret: string | null;
+
+        ret = await this._findBundleGuess(path.resolve(me, "../../../static"));
+        if (ret !== null) return ret;
+
+        let head: string = me;
+        for (let i=0; i < 8; i++) {
+            const headStatic: string = path.join(head, "static");
+            ret = await this._findBundleGuess(headStatic);
+            if (ret !== null) return ret;
+            head = path.resolve(head, "../");
         }
-        return builder.build();
+
+        return Promise.reject("Bundle could not be found for offline PSuspend binary");
+    }
+
+    private async _findBundleGuess(dir: string): Promise<string | null> {
+        try {
+            await fs.access(dir, fs.constants.F_OK);
+        } catch (e) {
+            return null;
+        }
+
+        const zip: string = path.join(dir, "pss_bundle.zip");
+
+        try {
+            await fs.access(dir, fs.constants.F_OK);
+        } catch (e) {
+            return null;
+        }
+
+        return zip;
     }
 
 };
